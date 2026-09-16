@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvenSight - Inventory Visibility OS</title>
+  <meta name="description" content="Professional inventory management with AI-assisted restock prediction, real-time stock monitoring, and financial journaling for SMEs.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var utm = params.get('utm_source');
+        if (utm && !localStorage.getItem('inv_source')) {
+          localStorage.setItem('inv_source', utm);
+        }
+      } catch(e) {}
+      if (document.cookie.indexOf('nextjsRouterState=') === -1) {
+        window.location.href = '/';
+      }
+    })();
+  </script>
+</head>
+<body>
+  <div id="next"></div>
+  <script src="/_next/static/chunks/main.js" defer></script>
+</body>
+</html>
