@@ -6,7 +6,7 @@ import { LogIn, UserPlus } from 'lucide-react';
 
 export default function AuthPage() {
   const { t } = useLang();
-  const { signIn, signUp, user } = useAuth();
+  const { login, register, user } = useAuth();
   const { addToast } = useToast();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -20,9 +20,9 @@ export default function AuthPage() {
     setErr('');
     setLoading(true);
     await new Promise(r => setTimeout(r, 300));
-    let result: { id: string } | null = null;
+    let result = false;
     if (mode === 'login') {
-      result = signIn(email, password);
+      result = login(email, password);
       if (!result) {
         const users = JSON.parse(localStorage.getItem('invensight_users') || '[]');
         const exists = users.find((u: any) => u.email === email.toLowerCase());
@@ -30,7 +30,7 @@ export default function AuthPage() {
         else setErr(t['auth.invalidCredentials']);
       }
     } else {
-      result = signUp(name, email, password);
+      result = register(name, email, password);
       if (!result) {
         const users = JSON.parse(localStorage.getItem('invensight_users') || '[]');
         if (users.find((u: any) => u.email === email.toLowerCase())) setErr('Email already registered');

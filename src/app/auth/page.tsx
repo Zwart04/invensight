@@ -9,7 +9,7 @@ import { useState, FormEvent } from 'react';
 
 export default function AuthPage() {
   const { t } = useLang();
-  const { user, signUp, signIn, signOut } = useAuth();
+  const { user, login, register, logout } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +25,7 @@ export default function AuthPage() {
             <CardTitle>Signed in as {user.email}</CardTitle>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <Button onClick={() => { signOut(); window.location.href = '/auth'; }}>{t['nav.logout']}</Button>
+            <Button onClick={() => { logout(); window.location.href = '/auth'; }}>{t['nav.logout']}</Button>
           </CardContent>
         </Card>
       </div>
@@ -39,13 +39,13 @@ export default function AuthPage() {
     await new Promise(r => setTimeout(r, 300));
     let result: any = null;
     if (mode === 'login') {
-      result = signIn(email, password);
+      result = login(email, password);
       if (!result) {
         const users = JSON.parse(localStorage.getItem('inv_users') || '[]');
         setErr(t['auth.invalidCredentials']);
       }
     } else {
-      result = signUp(name, email, password);
+      result = register(name, email, password);
       if (!result) {
         const users = JSON.parse(localStorage.getItem('inv_users') || '[]');
         if (users.find((u: any) => u.email === email.toLowerCase())) {

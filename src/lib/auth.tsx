@@ -1,100 +1,52 @@
 'use client';
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { User } from '@/lib/types';
 
-export type User = { id: string; name: string; email: string };
-
-const STORAGE_USER = 'invensight_user';
-const STORAGE_USERS = 'inv_users';
-const DEFAULT_USER: User = { id: 'default', name: 'Admin', email: 'admin@invensight.local' };
-
-function getStoredUser(): User | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = localStorage.getItem(STORAGE_USER);
-    if (!raw) return null;
-    const u = JSON.parse(raw) as User;
-    if (u && u.id && u.email) return u;
-    return null;
-  } catch { return null; }
-}
-
-function getStoredUsers(): User[] {
-  if (typeof window === 'undefined') return [DEFAULT_USER];
-  try {
-    const raw = localStorage.getItem(STORAGE_USERS);
-    if (!raw) return [DEFAULT_USER];
-    const arr = JSON.parse(raw) as User[];
-    if (Array.isArray(arr) && arr.length) return arr;
-    return [DEFAULT_USER];
-  } catch { return [DEFAULT_USER]; }
-}
-
-function setStoredUser(u: User | null) {
-  if (typeof window === 'undefined') return;
-  if (u) localStorage.setItem(STORAGE_USER, JSON.stringify(u));
-  else localStorage.removeItem(STORAGE_USER);
-}
-
-function setStoredUsers(users: User[]) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
-}
-
-function signUp(name: string, email: string, password: string): User | null {
-  if (!name.trim()) return null;
-  if (!email.trim() || !email.includes('@')) return null;
-  if (!password || password.length < 6) return null;
-  const users = getStoredUsers();
-  if (users.find(u => u.email === email)) return null;
-  const user: User = { id: crypto.randomUUID(), name: name.trim(), email: email.trim().toLowerCase() };
-  users.push(user);
-  setStoredUsers(users);
-  setStoredUser(user);
-  return user;
-}
-
-function signIn(email: string, password: string): User | null {
-  if (!email || !password) return null;
-  const users = getStoredUsers();
-  return users.find(u => u.email === email.toLowerCase()) ?? null;
-}
-
-function signOut() {
-  setStoredUser(null);
-}
-
-type AuthContextType = {
+const AuthContext = createContext<{
   user: User | null;
-  signUp: (name: string, email: string, password: string) => User | null;
-  signIn: (email: string, password: string) => User | null;
-  signOut: () => void;
-  loading: boolean;
-};
-
-const AuthContext = createContext<AuthContextType | null>(null);
+  login: (email: string, password: string) => boolean;
+  logout: () => void;
+  register: (name: string, email: string, password: string) => boolean;
+}>({ user: null, login: () => false, logout: () => {}, register: () => false });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setUser(getStoredUser());
-    setLoading(false);
+    const stored = localStorage.getItem('invensight_user');
+    if (stored) {
+      try { setUser(JSON.parse(stored) as User); } catch {}
+    }
+    setLoaded(true);
   }, []);
 
-  const value: AuthContextType = {
-    user,
-    signUp,
-    signIn,
-    signOut,
-    loading,
+  const login = (email: string, password: string) => {
+    const users = JSON.parse(localStorage.getItem('inv_users') || '[]');
+    const u = users.find((x: User) => x.email === email.toLowerCase());
+    if (u) { setUser(u); localStorage.setItem('invensight_user', JSON.stringify(u)); return true; }
+    return false;
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const logout = () => { setUser(null); localStorage.removeItem('invensight_user'); };
+
+  const register = (name: string, email: string, password: string) => {
+    if (!name.trim() || !email.includes('@') || !password || password.length < 6) return false;
+    const users = JSON.parse(localStorage.getItem('inv_users') || '[]');
+    if (users.find((x: User) => x.email === email.toLowerCase())) return false;
+    const u: User = { id: crypto.randomUUID(), name: name.trim(), email: email.trim().toLowerCase() };
+    users.push(u);
+    localStorage.setItem('inv_users', JSON.stringify(users));
+    setUser(u);
+    localStorage.setItem('invensight_user', JSON.stringify(u));
+    return true;
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, register }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
-}
+export const useAuth = () => useContext(AuthContext);

@@ -12,7 +12,7 @@ import { Save, Link, Copy, Check } from 'lucide-react';
 
 export default function SettingsPage({ addToast }: { addToast: (msg: string, type?: 'default' | 'success' | 'error' | 'info') => void }) {
   const { t } = useLang();
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const [businessName, setBusinessName] = useState('My Business');
   const [emailNotif, setEmailNotif] = useState(false);

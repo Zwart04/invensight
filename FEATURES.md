@@ -1,111 +1,25 @@
----
-project: InvenSight
-date: 2026-09-16
-status: ideation
----
+# FEATURES.md — InvenSight
 
-# InvenSight — Inventory Visibility OS
+Fitur yang dibangun (8 fitur kompleks, NO CRUD sederhana, NO /waha/, NO Pixel/GA):
 
-## Problem
-UMKM retailer dan distributor sering kehilangan visibility stok secara real-time, menyebabkan stockout, overstock, dan ketidaktepatan prediksi pengisian. Tools inventory yang ada seringkali berbayar mahal atau terlalu kompleks.
+1. **Dashboard Realtime** — Recharts dashboard dengan stok per kategori (bar chart), stock-in vs stock-out tren 7 hari (area chart), low-stock alert cards, ringkasan inventaris. Bilingual EN/ID dengan toggle. Lucide icons di setiap card.
 
-## Target Audience
-- UMKM toko/retailer dengan 50-2000 SKU
-- Distributor kecil dengan multiple supplier
-- Warehouse kecil yang butuh visibility stok
+2. **Products CRUD + Catalogs** — Manajemen produk lengkap: create/read/update/delete produk dengan field nama, SKU, kategori, harga beli, harga jual, stok minimum, stok maksimum, satuan, supplier, foto produk (URL). Search + filter kategori + sort + paginasi 10/halaman. Export daftar produk ke CSV.
 
-## Features (8 fitur berat)
+3. **Stock Transactions** — Pencatatan stock-in (penerimaan dari supplier), stock-out (penjualan/pengiriman), dan stock-adjustment (koreksi stok manual) dengan input jumlah, keterangan, dan tanggal. Setiap transaksi otomatis update stok produk. Riwayat transaksi dengan audit trail (siapa, kapan, perubahan stok berapa). Bulk import transaksi dari CSV.
 
-### 1. Dashboard Realtime + Recharts + Status Overview
-Dashboard utama dengan statistik total produk, stok rendah, stok habis, nilai inventaris, pembelian pending. Visualisasi Recharts bar chart, pie chart distribusi stok, dan line chart tren 7 hari. Widget Realtime stock alerts.
+4. **AI Restock Predictions** — Prediksi kapan stok akan habis menggunakan simple moving average 7 hari + safety stock heuristic. Tampilkan daftar produk yang perlu restock dalam 7 hari ke depan dengan level urgensi (kritis/sedang/tren). Export prediction ke CSV.
 
-### 2. Inventory CRUD Kompleks + Search + Filter
-CRUD produk lengkap dengan search real-time, filter kategori, filter status (low/out/good). Stock level warning otomatis berdasarkan minStock. Export individual. Simpan ke localStorage.
+5. **Supplier Catalog (Mock External API)** — CRUD data supplier (nama, kontak, alamat, produk yang di-supply). Fitur katalog supplier yang menampilkan dummy data produk supplier (mock API call dengan delay simulasi) — pengguna bisa memilih produk dari katalog untuk melakukan stock-in.
 
-### 3. Stock Heatmap Canvas GPU-accelerated
-Visualisasi grid produk dengan warna berbasis stock ratio (hijau → kuning → merah). Menggunakan HTML5 Canvas dengan render per-item card berwarna gradient. Interactive: hover show tooltip, klik item masuk ke detail. GPU-friendly canvas.
+6. **Canvas Heatmap Stock Distribution** — Visualisasi distribusi stok per kategori menggunakan canvas HTML5 dengan color intensity berdasarkan level stok (baz60 radix color scale). Hover menunjukkan angka detail. Klik kategori memfilter dashboard. Responsif dan GPU-acceleration friendly.
 
-### 4. AI-powered Restock Prediction Heuristic
-Prediksi kapan stok akan habis berdasarkan:
-- Current stock level
-- Average daily consumption (dihitung dari riwayat order/pergantian stok, dengan fallback mock data)
-- Supplier lead time (konfigurasi per kategori)
-- Alert threshold
-Tampilkan jumlah hari sampai stockout, rekomendasi quantity order, dan urgency level (low/medium/high/critical). Tanpa ML model berat — heuristic rule-based dengan mock data yang realistis.
+7. **Export PDF & Excel + Auto Finance Journal** — Export laporan stok ke PDF (jsPDF) dengan header perusahaan, tabel stok per produk, total nilai inventaris. Export transaksi ke Excel (xlsx/SheetJS) dengan sheet terpisah per kategori. Setiap stock-in/out otomatis mencatat jurnal keuangan di Finance tab dengan sumber "auto-stock".
 
-### 5. Supplier Management + Order Management (CRUD ganda)
-CRUD supplier (nama, email, phone, address, notes, contact person). CRUD pembelian (order) yang terhubung ke supplier + produk. Status order: pending/confirmed/received/cancelled/delayed. Update stock otomatis saat order received. Histories dan audit trail sederhana.
+8. **Analytics + Attribution + Share** — Tab analytics dengan Recharts bar chart sumber traffic (dari UTM params → localStorage.source). Share fitur: generate URL berisi state (kategori terpilih + rentang tanggal) yang bisa di-copy ke clipboard atau dibuka via wa.me deep-link. In-app toast notifikasi (shadcn Toast) untuk setiap aksi sukses/gagal.
 
-### 6. Supplier Order Tracking + Lead Time Calendar
-Track pembelian per supplier dengan status visual. Realtime timeline order dengan tanggal menerima. Lead time per supplier disimpan dan digunakan untuk restock prediction. Integrasi dengan kalender sederhana.
+NOTIFIKASI: in-app toast (shadcn Toast) + wa.me share-link. TIDAK ada WAHA, TIDAK ada Pixel/GA.
+ATTRIBUTION: UTM/URL-param → localStorage.source → Recharts bar chart /analytics. TIDAK ada fbq/gtag/pixel.
+FINANCE: Auto-journal terintegrasi — setiap stock-in/out muncul di Finance tab.
 
-### 7. Analytics + Charts + Financial Journal
-- Recharts: stock value per category, stock level distribution pie, monthly trend area chart, top products by value
-- Financial auto-journal: setiap order (purchase) dan stok adjustment otomatis tercatat di journal. Tag: auto-vendor, auto-task, auto-bill. Tampilkan total nilai, total pengeluaran, per supplier. Export journal.
-- Source attribution: baca UTM param `?utm_source=...` di first visit → localStorage.source → Recharts bar chart di halaman analytics menunjukkan sumber traffic.
-
-### 8. Bilingual EN/ID + Theme Toggle + Settings + Share + Export PDF/Excel
-- Bilingual: EN/ID toggle di navbar, semua teks pakai t.* dictionary
-- Theme: dark/light/system toggle
-- Settings: business name, notification email mock, share link generator
-- Share: share single product via `wa.me` link dengan pre-filled message (tanpa WAHA API). Link berisi produk name, qty, location, updatedAt.
-- Export PDF: jspdf generate laporan inventory. Export Excel/CSV: generate file CSV download.
-- Auth: local-first login/register dengan localStorage hf_user/hf_users.
-
-## Notification (Boss policy 2026-08-29)
-- In-app toast (shadcn Toast) untuk semua aksi: save success, delete success, error
-- Email mock: di settings user bisa set notification email → sistem "mengirim" email mock (hanya toast "Email sent to X")
-- Share: `wa.me` link dengan pre-filled message (tanpa WAHA API, tanpa QR scan)
-
-## Attribution (Boss policy 2026-08-29)
-- Baca UTM params `?utm_source=...&utm_medium=...` di first visit
-- Simpan ke `localStorage.source` sekali saja
-- Di halaman `/analytics`, tampilkan Recharts bar chart "Traffic Sources" berdasarkan localStorage.source
-- TIDAK ADA fbq, gtag, NEXT_PUBLIC_META_PIXEL_ID, NEXT_PUBLIC_GOOGLE_ADS_ID
-
-## Tech Stack
-- Next.js 16 (App Router) + TypeScript
-- Tailwind v4 + shadcn/ui (component primitives: Button, Input, Card, Badge, Select, Textarea, Dialog)
-- Recharts untuk chart
-- lucide-react untuk icon
-- jspdf untuk PDF export
-- HTML5 Canvas untuk heatmap
-- localStorage untuk semua data (no backend)
-- CSS-first design, no emoji
-
-## Route Map (12+ route)
-1. `/` — Dashboard (Recharts + stats + alerts)
-2. `/inventory` — Inventory CRUD + search + filter + heatmap canvas
-3. `/orders` — Order management CRUD + status tracking
-4. `/suppliers` — Supplier CRUD
-5. `/analytics` — Analytics dashboard (Recharts: breakdown, distribution, trend, top products, source attribution)
-6. `/settings` — Settings (profile, business name, theme, notification email mock, share link)
-7. `/categories` — Category management CRUD + stock/value per category
-8. `/share` — Share single product halaman (select product, generate wa.me link)
-9. `/export` — Export PDF + CSV
-10. `/auth` — Login/Register page
-11. `/s/[slug]` — Shared item public page (product detail untuk yang di-share)
-12. `/s` — Shared items listing (public)
-
-## Data Model (localStorage)
-- `inv_prod`: Product[]
-- `inv_supp`: Supplier[]
-- `inv_ord`: Order[]
-- `inv_cat`: Category[]
-- `inv_journal`: JournalEntry[] (auto-finance)
-- `inv_source`: string (attribution)
-- `inv_theme`: 'dark'|'light'|'system'
-- `inv_lang`: 'en'|'id'
-- `inv_user`: User | null
-- `inv_users`: User[]
-
-## Notification Spec
-- Toast: shadcn-style toast container di bottom-right
-- Email mock: toast "Email notification sent to [email]" saat order confirmed atau restock critical
-- Share: generate wa.me link dengan format `https://wa.me/?text=<encoded message>` — tanpa API, tanpa WAHA
-
-## Anti-duplicate check
-InvenSight berbeda dari FleetMile (primary hari ini):
-- FleetMile: fleet/vehicle management, GPS tracking, ETA, fuel monitoring
-- InvenSight: inventory/stock management, supplier, order, restock prediction
-- Tidak ada overlap domain. Keduanya inventory/fleet tapi berbeda subdomain secara spesifik.
+Total: 8 fitur kompleks, 14 route, Next.js 16 + TS + Tailwind v4 + shadcn/ui + Recharts + lucide-react + jsPDF + SheetJS.
