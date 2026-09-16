@@ -1,9 +1,10 @@
+'use client';
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
 export type User = { id: string; name: string; email: string };
 
 const STORAGE_USER = 'invensight_user';
-const STORAGE_USERS = 'invensight_users';
+const STORAGE_USERS = 'inv_users';
 const DEFAULT_USER: User = { id: 'default', name: 'Admin', email: 'admin@invensight.local' };
 
 function getStoredUser(): User | null {

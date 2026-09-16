@@ -80,7 +80,7 @@ export default function AnalyticsPage({ products, orders, categories }: { produc
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard icon={<DollarSign size={20} />} label={t['analytics.stockValue']} value={`$${totalValue.toLocaleString()}`} color="bg-emerald-500/20 text-emerald-400" />
         <KpiCard icon={<AlertTriangle size={20} />} label={t['analytics.lowStockItems']} value={lowStockCount} sub={`${outOfStockCount} ${t['dashboard.outOfStock'].toLowerCase()}`} color="bg-amber-500/20 text-amber-400" />
-        <KpiCard icon={<TrendingUp size={20} />} label={t['analytics.monthlyTrend'].split(' ')[0]} value="+" + Math.round(Math.random() * 15 + 5) + "%" color="bg-blue-500/20 text-blue-400" />
+        <KpiCard icon={<TrendingUp size={20} />} label={t['analytics.monthlyTrend'].split(' ')[0]} value={`+` + Math.round(Math.random() * 15 + 5) + `%`} color="bg-blue-500/20 text-blue-400" />
         <KpiCard icon={<BarChart3 size={20} />} label={t['analytics.totalOrders']} value={orders.length} sub={`${orderStats.confirmed} ${t['analytics.confirmedOrders'].toLowerCase()}`} color="bg-purple-500/20 text-purple-400" />
       </div>
 
@@ -105,7 +105,7 @@ export default function AnalyticsPage({ products, orders, categories }: { produc
                   >
                     {catBreakdown.map((_, i) => <Cell key={i} fill={catColorArray[i]} />)}
                   </Pie>
-                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 8 }} />
+                  <Tooltip formatter={(value: any) => `$${Number(value).toLocaleString()}`} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 8 }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -185,7 +185,7 @@ export default function AnalyticsPage({ products, orders, categories }: { produc
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
                   <XAxis type="number" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
                   <YAxis dataKey="name" type="category" width={120} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 8 }} />
+                  <Tooltip formatter={(value: any) => `$${Number(value).toLocaleString()}`} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 8 }} />
                   <Bar dataKey="value" radius={[0, 4, 4, 0]} fill="hsl(var(--primary))" />
                 </BarChart>
               </ResponsiveContainer>

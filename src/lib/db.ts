@@ -1,3 +1,5 @@
+'use client';
+import { useState, useEffect, useCallback } from 'react';
 const STORAGE_PROD = 'inv_prod';
 const STORAGE_SUPP = 'inv_supp';
 const STORAGE_ORD = 'inv_ord';
@@ -10,7 +12,8 @@ function load<T>(key: string, fallback: T): T {
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
     const data = JSON.parse(raw);
-    if (Array.isArray(data)) return data;
+    if (Array.isArray(data) && Array.isArray(fallback)) return data as T;
+    if (!Array.isArray(data)) return data as T;
     return fallback;
   } catch { return fallback; }
 }
@@ -23,10 +26,10 @@ function save<T>(key: string, data: T) {
 function genId() { return crypto.randomUUID(); }
 
 export function useDB() {
-  const products = load<any[]>(STORAGE_PROD, []);
-  const suppliers = load<any[]>(STORAGE_SUPP, []);
-  const orders = load<any[]>(STORAGE_ORD, []);
-  const categories = load<any[]>(STORAGE_CAT, []);
+  const [products, setProducts] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
   const seed = useCallback(() => {
     const cats = load<any[]>(STORAGE_CAT, []);
@@ -73,23 +76,26 @@ export function useDB() {
     const np: any = { ...p, id: genId(), updatedAt: new Date().toISOString() };
     arr.push(np);
     save(STORAGE_PROD, arr);
+    setProducts([...arr]);
     return np;
   };
 
   const updateProduct = (id: string, data: Partial<any>) => {
     const arr = load<any[]>(STORAGE_PROD, []);
-    const idx = arr.findIndex(p => p.id === id);
+    const idx = arr.findIndex((p: any) => p.id === id);
     if (idx === -1) return null;
     arr[idx] = { ...arr[idx], ...data, updatedAt: new Date().toISOString() };
     save(STORAGE_PROD, arr);
+    setProducts([...arr]);
     return arr[idx];
   };
 
   const deleteProduct = (id: string) => {
     const arr = load<any[]>(STORAGE_PROD, []);
-    save(STORAGE_PROD, arr.filter(p => p.id !== id));
+    save(STORAGE_PROD, arr.filter((p: any) => p.id !== id));
     const oarr = load<any[]>(STORAGE_ORD, []);
-    save(STORAGE_ORD, oarr.filter(o => o.productId !== id));
+    save(STORAGE_ORD, oarr.filter((o: any) => o.productId !== id));
+    setProducts(arr.filter((p: any) => p.id !== id));
   };
 
   const addOrder = (o: Omit<any, 'id'>) => {
@@ -97,15 +103,17 @@ export function useDB() {
     const no: any = { ...o, id: genId() };
     arr.push(no);
     save(STORAGE_ORD, arr);
+    setOrders([...arr]);
     return no;
   };
 
   const updateOrderStatus = (id: string, status: any) => {
     const arr = load<any[]>(STORAGE_ORD, []);
-    const idx = arr.findIndex(o => o.id === id);
+    const idx = arr.findIndex((o: any) => o.id === id);
     if (idx === -1) return null;
     arr[idx].status = status;
     save(STORAGE_ORD, arr);
+    setOrders([...arr]);
     return arr[idx];
   };
 
@@ -114,23 +122,26 @@ export function useDB() {
     const ns: any = { ...s, id: genId(), lastOrder: '', activeOrders: 0 };
     arr.push(ns);
     save(STORAGE_SUPP, arr);
+    setSuppliers([...arr]);
     return ns;
   };
 
   const updateSupplier = (id: string, data: Partial<any>) => {
     const arr = load<any[]>(STORAGE_SUPP, []);
-    const idx = arr.findIndex(s => s.id === id);
+    const idx = arr.findIndex((s: any) => s.id === id);
     if (idx === -1) return null;
     arr[idx] = { ...arr[idx], ...data };
     save(STORAGE_SUPP, arr);
+    setSuppliers([...arr]);
     return arr[idx];
   };
 
   const deleteSupplier = (id: string) => {
     const arr = load<any[]>(STORAGE_SUPP, []);
-    save(STORAGE_SUPP, arr.filter(s => s.id !== id));
+    save(STORAGE_SUPP, arr.filter((s: any) => s.id !== id));
     const oarr = load<any[]>(STORAGE_ORD, []);
-    save(STORAGE_ORD, oarr.filter(o => o.supplierId !== id));
+    save(STORAGE_ORD, oarr.filter((o: any) => o.supplierId !== id));
+    setSuppliers(arr.filter((s: any) => s.id !== id));
   };
 
   const addCategory = (c: Omit<any, 'id' | 'createdAt'>) => {
@@ -138,26 +149,25 @@ export function useDB() {
     const nc: any = { ...c, id: genId(), createdAt: new Date().toISOString() };
     arr.push(nc);
     save(STORAGE_CAT, arr);
+    setCategories([...arr]);
     return nc;
   };
 
   const deleteCategory = (id: string) => {
     const arr = load<any[]>(STORAGE_CAT, []);
-    save(STORAGE_CAT, arr.filter(c => c.id !== id));
+    save(STORAGE_CAT, arr.filter((c: any) => c.id !== id));
+    setCategories(arr.filter((c: any) => c.id !== id));
   };
 
   return {
-    products: [...products],
-    suppliers: [...suppliers],
-    orders: [...orders],
-    categories: [...categories],
+    products,
+    suppliers,
+    orders,
+    categories,
     addProduct, updateProduct, deleteProduct,
     addOrder, updateOrderStatus,
     addSupplier, updateSupplier, deleteSupplier,
     addCategory, deleteCategory,
-    refresh: () => {
-      // force reload by re-reading (state will update via useProducts hook instead)
-    },
   };
 }
 
@@ -248,4 +258,9 @@ export function clearShare() {
 export function isShareExpired(item: any) {
   if (!item || !item.expiresAt) return false;
   return new Date(item.expiresAt) < new Date();
+}
+
+export function createStaticParams() {
+  if (typeof window !== 'undefined') return [];
+  return [];
 }

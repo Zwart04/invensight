@@ -1,6 +1,7 @@
+'use client';
+import { useEffect, useState } from 'react';
 import { useLang } from '@/lib/lang';
 import { useTheme } from '@/lib/theme';
-import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/card';
 import { Button } from '@/components/button';
 import { Package, AlertCircle, RefreshCw, Clock } from 'lucide-react';

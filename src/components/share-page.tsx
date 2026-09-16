@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLang } from '@/lib/lang';
 import { useToast } from '@/lib/toast';
 import { useShareStore, setShareItem, clearShare, isShareExpired } from '@/lib/db';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/card';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Badge } from '@/components/badge';

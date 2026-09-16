@@ -1,5 +1,6 @@
+'use client';
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import t from './t';
+import { t } from './t';
 
 type Locale = 'en' | 'id';
 

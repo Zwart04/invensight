@@ -41,19 +41,15 @@ export default function AuthPage() {
     if (mode === 'login') {
       result = signIn(email, password);
       if (!result) {
-        const users = JSON.parse(localStorage.getItem('invensight_users') || '[]');
-        if (!users.find((u: any) => u.email === email.toLowerCase())) {
-          setErr(t['auth.invalidCredentials']);
-        } else {
-          setErr(t['auth.invalidCredentials']);
-        }
+        const users = JSON.parse(localStorage.getItem('inv_users') || '[]');
+        setErr(t['auth.invalidCredentials']);
       }
     } else {
       result = signUp(name, email, password);
       if (!result) {
-        const users = JSON.parse(localStorage.getItem('invensight_users') || '[]');
+        const users = JSON.parse(localStorage.getItem('inv_users') || '[]');
         if (users.find((u: any) => u.email === email.toLowerCase())) {
-          setErr('Email already registered');
+          setErr(t['auth.emailTaken']);
         } else if (!name.trim()) {
           setErr(t['auth.nameRequired']);
         } else if (!email.includes('@')) {

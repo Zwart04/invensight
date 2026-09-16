@@ -1,4 +1,4 @@
-const t = {
+export const t = {
   en: {
     'app.title': 'InvenSight - Inventory Visibility OS',
     'nav.dashboard': 'Dashboard',
@@ -128,6 +128,7 @@ const t = {
     'suppliers.nameRequired': 'Supplier name is required',
     'suppliers.emailRequired': 'Email is required',
     'suppliers.emailInvalid': 'Enter a valid email',
+    'suppliers.actions': 'Actions',
     'analytics.title': 'Analytics',
     'analytics.inventoryOverview': 'Inventory Overview',
     'analytics.stockValue': 'Total Stock Value',
@@ -211,7 +212,9 @@ const t = {
     'categories.deleteSuccess': 'Category deleted',
     'categories.confirmDelete': 'Delete this category?',
     'categories.nameRequired': 'Category name is required',
+    'categories.editSupplier': 'Edit Category',
     'notifications.invalidCredentials': 'Invalid credentials',
+    'auth.emailTaken': 'Email already registered',
   },
   id: {
     'app.title': 'InvenSight - Sistem Visibilitas Inventaris',
@@ -257,7 +260,7 @@ const t = {
     'dashboard.outOfStock': 'Habis',
     'dashboard.legend.low': 'Stok Rendah',
     'dashboard.legend.out': 'Habis',
-    'dashboard.legend.good': 'Stok Baik',
+    'dashboard.legend.good': "Stok Baik",
     'inventory.title': 'Manajemen Inventaris',
     'inventory.search': 'Cari produk...',
     'inventory.addProduct': 'Tambah Produk',
@@ -342,6 +345,7 @@ const t = {
     'suppliers.nameRequired': 'Nama supplier wajib diisi',
     'suppliers.emailRequired': 'Email wajib diisi',
     'suppliers.emailInvalid': 'Masukkan email yang valid',
+    'suppliers.actions': 'Aksi',
     'analytics.title': 'Analitik',
     'analytics.inventoryOverview': 'Ikhtisar Inventaris',
     'analytics.stockValue': 'Nilai Total Stok',
@@ -425,7 +429,8 @@ const t = {
     'categories.deleteSuccess': 'Kategori dihapus',
     'categories.confirmDelete': 'Hapus kategori ini?',
     'categories.nameRequired': 'Nama kategori wajib diisi',
+    'categories.editSupplier': 'Edit Kategori',
     'notifications.invalidCredentials': 'Kredensial tidak valid',
+    'auth.emailTaken': 'Email sudah terdaftar',
   },
 };
-export default t;

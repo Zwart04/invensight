@@ -92,7 +92,11 @@ export default function SettingsPage({ addToast }: { addToast: (msg: string, typ
               <p className="text-sm font-medium">{t['settings.enableEmail']}</p>
               <p className="text-xs text-muted-foreground">{t['settings.emailAddress']}</p>
             </div>
-            <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
+              <Switch
+                checked={emailNotif}
+                onChange={setEmailNotif as any}
+                className="w-9 h-5"
+              />
           </div>
           {emailNotif && (
             <div>
