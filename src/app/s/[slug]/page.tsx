@@ -1,7 +1,7 @@
 import SharedPageClient from './shared-page-client';
 
 export function generateStaticParams() {
-  return [{ slug: 'sample' }];
+  return [{ slug: 'sample' }, { slug: 'demo-household' }];
 }
 
 export default function SharedPage({ params }: { params: { slug: string } }) {

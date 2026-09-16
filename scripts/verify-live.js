@@ -31,7 +31,7 @@ const base = process.argv[2] || process.env.VERIFY_BASE_URL || 'http://localhost
 const routeArg = process.env.VERIFY_ROUTES;
 const routes = routeArg
   ? routeArg.split(',').map((r) => (r.startsWith('/') ? r : '/' + r))
-  : ['/', '/login', '/register', '/dashboard', '/tasks', '/vendors', '/budget', '/inventory', '/assets', '/finance', '/share', '/waha', '/settings', '/s/demo-household'];
+  : ['/', '/login', '/register', '/analytics', '/auth', '/categories', '/export', '/heatmap', '/inventory', '/journal', '/orders', '/restock', '/scanner', '/settings', '/share', '/s/demo-household', '/suppliers'];
 
 (async () => {
   let browser;
